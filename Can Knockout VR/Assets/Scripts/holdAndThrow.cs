@@ -6,6 +6,7 @@ public class holdAndThrow : MonoBehaviour {
 
 	private GameObject collidingObj;
 	private GameObject heldObj;
+	private bool grabbed;
 
 	private SteamVR_Controller.Device Controller{
 		get{
@@ -21,11 +22,15 @@ public class holdAndThrow : MonoBehaviour {
 		// if already holding something or not colliding anything, do nothing
 		if(heldObj || !collidingObj) return;
 		// create a fixed joint and attach the other object to the controller
+		grabbed = true;
 		collidingObj.transform.position = gameObject.transform.position;
 		FixedJoint fix = gameObject.AddComponent<FixedJoint>();
 		fix.breakForce = 20000;
 		fix.breakTorque = 20000;
 		fix.connectedBody = collidingObj.GetComponent<Rigidbody> ();
+		Debug.Log ("in Grab object");
+		//Haptic feedback on grabbing the object
+		SteamVR_Controller.Input ((int)trackedObj.index).TriggerHapticPulse(3000);
 		// update the references
 		heldObj = collidingObj;
 		collidingObj = null;
@@ -34,6 +39,7 @@ public class holdAndThrow : MonoBehaviour {
 	void releaseObject(){
 		// if not holding anything return
 		if(!heldObj) return;
+		grabbed = false;
 		// set the velocity an drotation of the other object same as that of the controller
 		heldObj.GetComponent<Rigidbody>().velocity = Controller.velocity;
 		heldObj.GetComponent<Rigidbody>().angularVelocity = Controller.angularVelocity;
@@ -49,6 +55,27 @@ public class holdAndThrow : MonoBehaviour {
 		}
 		if (Controller.GetHairTriggerUp ()) {
 			releaseObject ();
+		}
+	}
+
+	void OnCollisionEnter(Collision other){
+		// if colliding object is present, do nothing
+		// else update colliding body
+		Debug.Log("in OnCollisionEnter");
+
+		SteamVR_Controller.Input ((int)trackedObj.index).TriggerHapticPulse(3000);
+		SteamVR_Controller.Input ((int)trackedObj.index).TriggerHapticPulse(3000);
+		SteamVR_Controller.Input ((int)trackedObj.index).TriggerHapticPulse(3000);
+
+	}
+	void OnCollisionStay(Collision other){
+		// if colliding object is present, do nothing
+		// else update colliding body
+		Debug.Log("in OnCollision Stay");
+		if(!grabbed){
+			SteamVR_Controller.Input ((int)trackedObj.index).TriggerHapticPulse(3000);
+		 	SteamVR_Controller.Input ((int)trackedObj.index).TriggerHapticPulse(3000);
+			SteamVR_Controller.Input ((int)trackedObj.index).TriggerHapticPulse(3000);
 		}
 	}
 
@@ -73,4 +100,16 @@ public class holdAndThrow : MonoBehaviour {
 		}
 		// else do nothing
 	}
+
+
+	//length is how long the vibration should go for
+	//strength is vibration strength from 0-1
+	IEnumerator LongVibration(float length, float strength) {
+		for(float i = 0; i < length; i += Time.deltaTime) {
+			SteamVR_Controller.Input((int)trackedObj.index).TriggerHapticPulse((ushort)Mathf.Lerp(0, 3999, strength));
+			yield return null;
+		}
+	}
+
+
 }
