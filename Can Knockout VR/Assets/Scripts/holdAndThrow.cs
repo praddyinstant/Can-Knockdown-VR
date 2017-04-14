@@ -21,7 +21,7 @@ public class holdAndThrow : MonoBehaviour {
 		// if already holding something or not colliding anything, do nothing
 		if(heldObj || !collidingObj) return;
 		// create a fixed joint and attach the other object to the controller
-		collidingObj.transform.position = gameObject.transform.position;
+		collidingObj.transform.position = gameObject.transform.position - (gameObject.transform.up * 0.02f) + (gameObject.transform.forward * 0.03f);
 		FixedJoint fix = gameObject.AddComponent<FixedJoint>();
 		fix.breakForce = 20000;
 		fix.breakTorque = 20000;
