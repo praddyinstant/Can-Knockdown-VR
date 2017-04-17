@@ -7,6 +7,11 @@ public class holdAndThrow : MonoBehaviour {
 	private GameObject collidingObj;
 	private GameObject heldObj;
 	private bool grabbed;
+	private int ballsRemaining = 3;
+	private int curScore = 0;
+	private Time ballPicked;
+	private TextMesh ballsDisplay;
+	private TextMesh scoreDisplay;
 
 	private SteamVR_Controller.Device Controller{
 		get{
@@ -14,8 +19,26 @@ public class holdAndThrow : MonoBehaviour {
 		}
 	}
 
+	void Start () {
+		//text = gameObject.GetComponent ("TextMesh") as TextMesh;
+		ballsDisplay = GameObject.Find("BallsRemValue").GetComponent<TextMesh>();
+		//ballDisp.text = "100";
+
+		scoreDisplay = GameObject.Find ("ScoreValue").GetComponent<TextMesh>();
+		//scoreDisp.text = "50";
+	}
+
 	void Awake(){
 		trackedObj = GetComponent<SteamVR_TrackedObject> ();
+	}
+
+	void calcScore(){
+		//Debug.Log (Time.realtimeSinceStartup);
+		new WaitForSeconds ((float)100);
+		//Debug.Log (Time.realtimeSinceStartup);
+		curScore = 50;
+		scoreDisplay.text = curScore.ToString ();
+		ballsDisplay.text = ballsRemaining.ToString ();
 	}
 
 	void grabObject(){
@@ -49,7 +72,14 @@ public class holdAndThrow : MonoBehaviour {
 		Destroy (GetComponent<FixedJoint> ());
 		// update the references
 		heldObj = null;
+		// Updating the remaining Balls
+		ballsRemaining--;
+
+		// Updating the Score
+		calcScore ();
+		Debug.Log (ballsRemaining);
 	}
+
 	void Update(){
 		if (Controller.GetHairTriggerDown ()) {
 			grabObject ();
