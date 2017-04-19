@@ -27,7 +27,9 @@ public class holdAndThrow : MonoBehaviour {
 		scoreDisplay = GameObject.Find ("ScoreValue").GetComponent<TextMesh>();
 		//scoreDisp.text = "50";
 	}
-
+	void printSome(object sender, ClickedEventArgs e){
+		Debug.Log ("pad clicked");
+	}
 	void Awake(){
 		trackedObj = GetComponent<SteamVR_TrackedObject> ();
 	}
@@ -87,7 +89,17 @@ public class holdAndThrow : MonoBehaviour {
 		if (Controller.GetHairTriggerUp ()) {
 			releaseObject ();
 		}
+
+//		laser.po
+//		if (laser.controller != null && controller.TriggerClicked())
+//		{
+//			if(bHit) {
+//				Debug.Log (hit.collider.name);
+//			}
+//		}
+
 	}
+
 
 	void OnCollisionEnter(Collision other){
 		// if colliding object is present, do nothing

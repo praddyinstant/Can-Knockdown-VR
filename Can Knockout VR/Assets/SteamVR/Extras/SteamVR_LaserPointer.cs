@@ -15,6 +15,7 @@ public delegate void PointerEventHandler(object sender, PointerEventArgs e);
 
 public class SteamVR_LaserPointer : MonoBehaviour
 {
+	SteamVR_TrackedController controller;
     public bool active = true;
     public Color color;
     public float thickness = 0.002f;
@@ -25,6 +26,7 @@ public class SteamVR_LaserPointer : MonoBehaviour
     public Transform reference;
     public event PointerEventHandler PointerIn;
     public event PointerEventHandler PointerOut;
+	RaycastHit hit;
 
     Transform previousContact = null;
 
@@ -35,6 +37,8 @@ public class SteamVR_LaserPointer : MonoBehaviour
         holder.transform.parent = this.transform;
         holder.transform.localPosition = Vector3.zero;
 		holder.transform.localRotation = Quaternion.identity;
+
+		controller = GetComponent<SteamVR_TrackedController>();
 
 		pointer = GameObject.CreatePrimitive(PrimitiveType.Cube);
         pointer.transform.parent = holder.transform;
@@ -61,7 +65,11 @@ public class SteamVR_LaserPointer : MonoBehaviour
         Material newMaterial = new Material(Shader.Find("Unlit/Color"));
         newMaterial.SetColor("_Color", color);
         pointer.GetComponent<MeshRenderer>().material = newMaterial;
+		//controller.TriggerClicked += setReference;
 	}
+//	public void setReference(object sender, ClickedEventArgs e){
+//		reference = hit.transform;
+//	}
 
     public virtual void OnPointerIn(PointerEventArgs e)
     {
@@ -87,10 +95,8 @@ public class SteamVR_LaserPointer : MonoBehaviour
 
         float dist = 100f;
 
-        SteamVR_TrackedController controller = GetComponent<SteamVR_TrackedController>();
-
         Ray raycast = new Ray(transform.position, transform.forward);
-        RaycastHit hit;
+        
         bool bHit = Physics.Raycast(raycast, out hit);
 
         if(previousContact && previousContact != hit.transform)
@@ -127,7 +133,6 @@ public class SteamVR_LaserPointer : MonoBehaviour
         {
             dist = hit.distance;
         }
-
         if (controller != null && controller.triggerPressed)
         {
             pointer.transform.localScale = new Vector3(thickness * 5f, thickness * 5f, dist);
@@ -137,5 +142,6 @@ public class SteamVR_LaserPointer : MonoBehaviour
             pointer.transform.localScale = new Vector3(thickness, thickness, dist);
         }
         pointer.transform.localPosition = new Vector3(0f, 0f, dist/2f);
+		reference = hit.transform;
     }
 }
