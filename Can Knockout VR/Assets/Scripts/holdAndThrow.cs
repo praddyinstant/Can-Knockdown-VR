@@ -7,6 +7,7 @@ public class holdAndThrow : MonoBehaviour {
 	private GameObject collidingObj;
 	private GameObject heldObj;
 	private bool grabbed;
+	private bool levelComplete;
 	private int ballsRemaining = 3;
 	private int curScore = 0;
 	private Time ballPicked;
@@ -20,6 +21,7 @@ public class holdAndThrow : MonoBehaviour {
 	}
 
 	void Start () {
+		levelComplete = false;
 		//text = gameObject.GetComponent ("TextMesh") as TextMesh;
 		ballsDisplay = GameObject.Find("BallsRemValue").GetComponent<TextMesh>();
 		//ballDisp.text = "100";
@@ -64,7 +66,9 @@ public class holdAndThrow : MonoBehaviour {
 
 	void releaseObject(){
 		// if not holding anything return
+		Debug.Log(heldObj);
 		if(!heldObj) return;
+		Debug.Log("Releasing obj");
 		grabbed = false;
 		// set the velocity an drotation of the other object same as that of the controller
 		heldObj.GetComponent<Rigidbody>().velocity = Controller.velocity;
@@ -79,10 +83,14 @@ public class holdAndThrow : MonoBehaviour {
 
 		// Updating the Score
 		calcScore ();
-		Debug.Log (ballsRemaining);
+		//Debug.Log (ballsRemaining);
 	}
 
 	void Update(){
+		if (GameObject.FindGameObjectsWithTag ("can").Length == 0 && !levelComplete) {
+			levelComplete = true;
+			Debug.Log ("Scene Over");
+		}
 		if (Controller.GetHairTriggerDown ()) {
 			grabObject ();
 		}
@@ -104,7 +112,7 @@ public class holdAndThrow : MonoBehaviour {
 	void OnCollisionEnter(Collision other){
 		// if colliding object is present, do nothing
 		// else update colliding body
-		Debug.Log("in OnCollisionEnter");
+		//Debug.Log("in OnCollisionEnter");
 
 		SteamVR_Controller.Input ((int)trackedObj.index).TriggerHapticPulse(3000);
 		SteamVR_Controller.Input ((int)trackedObj.index).TriggerHapticPulse(3000);
@@ -114,7 +122,7 @@ public class holdAndThrow : MonoBehaviour {
 	void OnCollisionStay(Collision other){
 		// if colliding object is present, do nothing
 		// else update colliding body
-		Debug.Log("in OnCollision Stay");
+		//Debug.Log("in OnCollision Stay");
 		if(!grabbed){
 			SteamVR_Controller.Input ((int)trackedObj.index).TriggerHapticPulse(3000);
 		 	SteamVR_Controller.Input ((int)trackedObj.index).TriggerHapticPulse(3000);
