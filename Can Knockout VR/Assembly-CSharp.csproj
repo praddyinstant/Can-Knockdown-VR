@@ -47,8 +47,9 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\ballHitCanSound.cs" />
      <Compile Include="Assets\Scripts\canHitGroundSound.cs" />
+     <Compile Include="Assets\Scripts\dataHolder.cs" />
      <Compile Include="Assets\Scripts\holdAndThrow.cs" />
-     <Compile Include="Assets\Scripts\mainMenuHandler.cs" />
+     <Compile Include="Assets\Scripts\menuHandler.cs" />
      <Compile Include="Assets\Scripts\sceneManager.cs" />
      <Compile Include="Assets\SteamVR\Extras\SteamVR_GazeTracker.cs" />
      <Compile Include="Assets\SteamVR\Extras\SteamVR_LaserPointer.cs" />

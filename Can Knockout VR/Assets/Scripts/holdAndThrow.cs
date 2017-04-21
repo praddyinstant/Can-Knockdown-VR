@@ -2,6 +2,9 @@
 using System.Collections;
 
 public class holdAndThrow : MonoBehaviour {
+	public GameObject levelCompleteObject;
+	public GameObject levelIncompleteObject;
+
 	private SteamVR_TrackedObject trackedObj;
 
 	private GameObject collidingObj;
@@ -21,21 +24,56 @@ public class holdAndThrow : MonoBehaviour {
 	}
 
 	void Start () {
+		Debug.Log ("Current level is: "+dataHolder.currentLevel);
 		levelComplete = false;
 		//text = gameObject.GetComponent ("TextMesh") as TextMesh;
 		ballsDisplay = GameObject.Find("BallsRemValue").GetComponent<TextMesh>();
 		//ballDisp.text = "100";
-
 		scoreDisplay = GameObject.Find ("ScoreValue").GetComponent<TextMesh>();
 		//scoreDisp.text = "50";
-	}
-	void printSome(object sender, ClickedEventArgs e){
-		Debug.Log ("pad clicked");
 	}
 	void Awake(){
 		trackedObj = GetComponent<SteamVR_TrackedObject> ();
 	}
+	void Update(){
+		if (GameObject.FindGameObjectsWithTag ("can").Length == 0 && !levelComplete) {
+			levelComplete = true;
+			Debug.Log ("The level is complete");
+			wrapUpLevel ("complete");
+		}
+		if (ballsRemaining == 0) {
+			// Level not complete
+			wrapUpLevel("incomplete");
+		}
+		if (Controller.GetHairTriggerDown ()) {
+			grabObject ();
+		}
+		if (Controller.GetHairTriggerUp ()) {
+			releaseObject ();
+		}
+	}
 
+	void wrapUpLevel(string status){
+		// Need to show the level complete display
+		if (status.Equals ("complete")) {
+			if (levelCompleteObject == null) {
+				Debug.LogError ("The level complete object is not set on both controllers.");
+				return;
+			}
+			levelCompleteObject.SetActive (true);
+		} else if (status.Equals ("incomplete")) {
+			if (levelIncompleteObject == null) {
+				Debug.LogError ("The level incomplete object is not set on both controllers.");
+				return;
+			}
+			levelIncompleteObject.SetActive (true);
+		}
+		// Add required scripts
+		gameObject.AddComponent<SteamVR_TrackedController>();
+		gameObject.AddComponent<SteamVR_LaserPointer>();
+		gameObject.AddComponent<menuHandler> ();
+	}
+	
 	void calcScore(){
 		//Debug.Log (Time.realtimeSinceStartup);
 		new WaitForSeconds ((float)100);
@@ -66,7 +104,7 @@ public class holdAndThrow : MonoBehaviour {
 
 	void releaseObject(){
 		// if not holding anything return
-		Debug.Log(heldObj);
+		//Debug.Log(heldObj);
 		if(!heldObj) return;
 		Debug.Log("Releasing obj");
 		grabbed = false;
@@ -80,34 +118,10 @@ public class holdAndThrow : MonoBehaviour {
 		heldObj = null;
 		// Updating the remaining Balls
 		ballsRemaining--;
-
 		// Updating the Score
 		calcScore ();
 		//Debug.Log (ballsRemaining);
 	}
-
-	void Update(){
-		if (GameObject.FindGameObjectsWithTag ("can").Length == 0 && !levelComplete) {
-			levelComplete = true;
-			Debug.Log ("Scene Over");
-		}
-		if (Controller.GetHairTriggerDown ()) {
-			grabObject ();
-		}
-		if (Controller.GetHairTriggerUp ()) {
-			releaseObject ();
-		}
-
-//		laser.po
-//		if (laser.controller != null && controller.TriggerClicked())
-//		{
-//			if(bHit) {
-//				Debug.Log (hit.collider.name);
-//			}
-//		}
-
-	}
-
 
 	void OnCollisionEnter(Collision other){
 		// if colliding object is present, do nothing
