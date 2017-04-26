@@ -11,6 +11,7 @@ public class holdAndThrow : MonoBehaviour {
 	private GameObject heldObj;
 	private bool grabbed;
 	private bool levelComplete;
+	private bool levelFailed;
 	private int ballsRemaining = 3;
 	private int curScore = 0;
 	private Time ballPicked;
@@ -41,8 +42,9 @@ public class holdAndThrow : MonoBehaviour {
 			Debug.Log ("The level is complete");
 			wrapUpLevel ("complete");
 		}
-		if (ballsRemaining == 0) {
+		if (ballsRemaining == 0 && !levelFailed) {
 			// Level not complete
+			levelFailed = true;
 			wrapUpLevel("incomplete");
 		}
 		if (Controller.GetHairTriggerDown ()) {
